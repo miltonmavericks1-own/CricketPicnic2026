@@ -191,6 +191,10 @@
       color: #f97373;
     }
 
+    .status.info {
+      color: #fde68a;
+    }
+
     @media (max-width: 768px) {
       .page {
         flex-direction: column;
@@ -218,6 +222,7 @@
   <div class="page">
     <!-- Image side: boys playing cricket, kids & families in park -->
     <div class="bg-wrapper">
+      <!-- Make sure this filename exactly matches the PNG in your repo -->
       <img src="PicnicCricket2026.png" alt="Cricket Picnic 2026 Background" />
     </div>
 
@@ -241,28 +246,28 @@
 
         <div class="row-inline">
           <div>
-            <label for="adults">Adults Attending *</label>
-            <input id="adults" name="adults" type="number" min="0" required placeholder="e.g. 2" />
+            <label for="adults">Adults Attending</label>
+            <input id="adults" name="adults" type="number" min="0" placeholder="e.g. 2" />
           </div>
           <div>
-            <label for="kids">Kids Attending *</label>
-            <input id="kids" name="kids" type="number" min="0" required placeholder="e.g. 2" />
+            <label for="kids">Kids Attending</label>
+            <input id="kids" name="kids" type="number" min="0" placeholder="e.g. 2" />
           </div>
         </div>
 
         <div class="row-inline">
           <div>
-            <label for="vegetarians">Vegetarians *</label>
-            <input id="vegetarians" name="vegetarians" type="number" min="0" required placeholder="e.g. 2" />
+            <label for="vegetarians">Vegetarians</label>
+            <input id="vegetarians" name="vegetarians" type="number" min="0" placeholder="e.g. 2" />
           </div>
           <div>
-            <label for="nonVegetarians">Non‑Vegetarians *</label>
-            <input id="nonVegetarians" name="nonVegetarians" type="number" min="0" required placeholder="e.g. 2" />
+            <label for="nonVegetarians">Non‑Vegetarians</label>
+            <input id="nonVegetarians" name="nonVegetarians" type="number" min="0" placeholder="e.g. 2" />
           </div>
         </div>
 
         <p class="hint">
-          Let's rock this event...
+          If you leave any number blank, we will treat it as zero. Vegetarian + non‑vegetarian ideally matches total adults + kids.
         </p>
 
         <button type="submit">Submit Registration</button>
@@ -286,6 +291,7 @@
       statusDiv.textContent = '';
       statusDiv.className = 'status';
 
+      // Treat blanks as 0 and always proceed
       const adults = Number(document.getElementById('adults').value || 0);
       const kids = Number(document.getElementById('kids').value || 0);
       const vegetarians = Number(document.getElementById('vegetarians').value || 0);
@@ -295,19 +301,17 @@
       const totalFoodPeople = vegetarians + nonVegetarians;
 
       if (totalPeople <= 0) {
-        statusDiv.textContent = 'Total attendees must be at least 1.';
-        statusDiv.className = 'status error';
-        return;
+        statusDiv.textContent =
+          'Note: total attendees is zero; we will still record your response in the sheet.';
+        statusDiv.className = 'status info';
+      } else if (totalFoodPeople !== totalPeople) {
+        statusDiv.textContent =
+          'Note: Vegetarian + non‑vegetarian counts do not match total adults + kids; we will still record your response.';
+        statusDiv.className = 'status info';
+      } else {
+        statusDiv.textContent = 'Submitting...';
+        statusDiv.className = 'status';
       }
-
-      if (totalFoodPeople !== totalPeople) {
-        statusDiv.textContent = 'Vegetarian + non‑vegetarian counts must equal total adults + kids.';
-        statusDiv.className = 'status error';
-        return;
-      }
-
-      statusDiv.textContent = 'Submitting...';
-      statusDiv.className = 'status';
 
       const formData = new FormData(form);
 
